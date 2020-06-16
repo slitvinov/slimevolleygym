@@ -68,15 +68,15 @@ class LinearPolicy:
     u = uball
     v = vball - vagent
     forward = backward = jump = 0
-    #g = 0.09673518038055715
     w[0] = 0.4836759019027857
-    w[1] = 0.5447007397561805 #0.483784490737581]
+    w[1] = 0.5447007397561805
+    w[2] = -0.12234233766090985
     x0 = xball +  w[0]/5*u*math.sqrt(yball) + w[1]/20 + w[2]/100*v
     if xagent - x0 > 0:
         forward = 1
+        jump = 1
     else:
         backward = 1
-    jump = 1
     return forward, backward, jump
 
 def makeBaselinePolicy(_):
@@ -203,7 +203,7 @@ if __name__=="__main__":
   history = evaluate_multiagent(env, policy0, policy1,
     render_mode=render_mode, n_trials=args.trials, init_seed=args.seed)
 
-  #print("history dump:", history)
-  #print(c0+" scored", np.round(np.mean(history), 3), "+/-", np.round(np.std(history), 3), "vs",
-  #  c1, "over", args.trials, "trials.")
+  print("history dump:", history)
+  print(c0+" scored", np.round(np.mean(history), 3), "+/-", np.round(np.std(history), 3), "vs",
+    c1, "over", args.trials, "trials.")
   print("score", np.mean(history))

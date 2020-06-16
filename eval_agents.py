@@ -202,6 +202,6 @@ if __name__=="__main__":
     render_mode=render_mode, n_trials=args.trials, init_seed=args.seed)
 
   #print("history dump:", history)
-  #print(c0+" scored", np.round(np.mean(history), 3), "±", np.round(np.std(history), 3), "vs",
+  #print(c0+" scored", np.round(np.mean(history), 3), "+/-", np.round(np.std(history), 3), "vs",
   #  c1, "over", args.trials, "trials.")
   print("score", np.mean(history))

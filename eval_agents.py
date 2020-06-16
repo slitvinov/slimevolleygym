@@ -24,6 +24,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module='gym')
 
 import gym
 import sys
+import math
 import random
 import os
 import numpy as np
@@ -33,7 +34,7 @@ from slimevolleygym.mlp import makeSlimePolicy, makeSlimePolicyLite # simple pre
 from slimevolleygym import BaselinePolicy
 from time import sleep
 
-#import cv2
+import cv2
 
 np.set_printoptions(threshold=20, precision=4, suppress=True, linewidth=200)
 
@@ -53,27 +54,28 @@ class RandomPolicy:
     return self.action_space.sample()
 
 def rnd():
-    return random.uniform(-3, 3)
+    return random.uniform(-1, 1)
 
 class LinearPolicy:
   def __init__(self, path):
-    self.w = [2.315505961957422, 0.07036313180864173, -0.11000468648378625, -2.8028946550524507, -2.465607397645676, 2.3847241030351913]
-    #self.w = [rnd(), rnd(), rnd(), rnd(), rnd(), rnd()]
-    sys.stderr.write("w = %s\n" % self.w)
+    self.w = [rnd()]
+    sys.stdout.write("w %s\n" % self.w)
   def predict(self, obs):
     w = self.w
     xagent, yagent, uagent, vagent, \
         xball, yball, uball, vball, \
         xopponent, yopponent, uopponent, vopponent =  obs
-    x = xagent - xball
-    y = yagent - yball
+    y = yball
+    u = uball    
+    v = vball
     forward = backward = jump = 0
-    if w[0] * x + w[1] * y + w[2] > 0:
+    g = 0.09673518038055715
+    x0 = xball + g*u*math.sqrt(yball) + 0.04114421301950588/100
+    if xagent - x0 > 0:
         forward = 1
     else:
         backward = 1
-    if w[3] * x + w[4] * y + w[5] > 0:
-        jump = 1
+    jump = 1
     return forward, backward, jump
 
 def makeBaselinePolicy(_):
@@ -86,7 +88,7 @@ def rollout(env, policy0, policy1, render_mode=False):
 
   done = False
   total_reward = 0
-  #count = 0
+  count = 0
 
   while not done:
 
@@ -102,12 +104,12 @@ def rollout(env, policy0, policy1, render_mode=False):
 
     if render_mode:
       env.render()
-      """ # used to render stuff to a gif later.
+      # used to render stuff to a gif later.
       img = env.render("rgb_array")
-      filename = os.path.join("gif","daytime",str(count).zfill(8)+".png")
+      filename = os.path.join(str(count).zfill(8)+".png")
+      print(filename)
       cv2.imwrite(filename, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
       count += 1
-      """
       sleep(0.01)
 
   return total_reward

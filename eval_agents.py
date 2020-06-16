@@ -65,17 +65,16 @@ class LinearPolicy:
     xagent, yagent, uagent, vagent, \
         xball, yball, uball, vball, \
         xopponent, yopponent, uopponent, vopponent =  obs
-    y = yball
     u = uball    
-    v = vball
     forward = backward = jump = 0
     g = 0.09673518038055715
-    x0 = xball + g*u*math.sqrt(yball) + w[0]/20
+    x0 = xball +  g*u*math.sqrt(yball) + 0.02725447295133605
     if xagent - x0 > 0:
         forward = 1
     else:
         backward = 1
-    jump = 1
+    if yball - yagent < 1.10062393690848:
+        jump = 1
     return forward, backward, jump
 
 def makeBaselinePolicy(_):

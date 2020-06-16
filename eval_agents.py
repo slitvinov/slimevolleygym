@@ -34,7 +34,7 @@ from slimevolleygym.mlp import makeSlimePolicy, makeSlimePolicyLite # simple pre
 from slimevolleygym import BaselinePolicy
 from time import sleep
 
-import cv2
+#import cv2
 
 np.set_printoptions(threshold=20, precision=4, suppress=True, linewidth=200)
 
@@ -70,7 +70,7 @@ class LinearPolicy:
     v = vball
     forward = backward = jump = 0
     g = 0.09673518038055715
-    x0 = xball + g*u*math.sqrt(yball) + 0.04114421301950588/100
+    x0 = xball + g*u*math.sqrt(yball) + w[0]/20
     if xagent - x0 > 0:
         forward = 1
     else:
@@ -104,12 +104,11 @@ def rollout(env, policy0, policy1, render_mode=False):
 
     if render_mode:
       env.render()
-      # used to render stuff to a gif later.
-      img = env.render("rgb_array")
+      '''img = env.render("rgb_array")
       filename = os.path.join(str(count).zfill(8)+".png")
       print(filename)
       cv2.imwrite(filename, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-      count += 1
+      count += 1'''
       sleep(0.01)
 
   return total_reward

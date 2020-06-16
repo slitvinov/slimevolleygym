@@ -735,7 +735,7 @@ class SlimeVolleyEnv(gym.Env):
     self.game = Game()
     self.ale = self.game.agent_right # for compatibility for some models that need the self.ale.lives() function
 
-    self.policy = BaselinePolicy() # the “bad guy”
+    self.policy = BaselinePolicy() # the "bad guy"
 
     self.viewer = None
 

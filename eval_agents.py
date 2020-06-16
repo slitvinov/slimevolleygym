@@ -58,23 +58,24 @@ def rnd():
 
 class LinearPolicy:
   def __init__(self, path):
-    self.w = [rnd()]
+    self.w = [rnd(), rnd(), rnd()]
     sys.stdout.write("w %s\n" % self.w)
   def predict(self, obs):
     w = self.w
     xagent, yagent, uagent, vagent, \
         xball, yball, uball, vball, \
         xopponent, yopponent, uopponent, vopponent =  obs
-    u = uball    
+    u = uball
+    v = vball
     forward = backward = jump = 0
-    g = 0.09673518038055715
-    x0 = xball +  g*u*math.sqrt(yball) + 0.02725447295133605
+    #g = 0.09673518038055715
+    w = [0.4836759019027857, 0.5447007397561805, 0.483784490737581]
+    x0 = xball +  w[0]/5*u*math.sqrt(yball) + w[1]/20 + w[2]/150*v
     if xagent - x0 > 0:
         forward = 1
     else:
         backward = 1
-    if yball - yagent < 1.10062393690848:
-        jump = 1
+    jump = 1
     return forward, backward, jump
 
 def makeBaselinePolicy(_):

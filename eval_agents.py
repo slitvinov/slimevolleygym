@@ -23,6 +23,8 @@ warnings.filterwarnings("ignore", category=FutureWarning, module='tensorflow')
 warnings.filterwarnings("ignore", category=UserWarning, module='gym')
 
 import gym
+import sys
+import random
 import os
 import numpy as np
 import argparse
@@ -49,6 +51,30 @@ class RandomPolicy:
     pass
   def predict(self, obs):
     return self.action_space.sample()
+
+def rnd():
+    return random.uniform(-3, 3)
+
+class LinearPolicy:
+  def __init__(self, path):
+    self.w = [2.315505961957422, 0.07036313180864173, -0.11000468648378625, -2.8028946550524507, -2.465607397645676, 2.3847241030351913]
+    #self.w = [rnd(), rnd(), rnd(), rnd(), rnd(), rnd()]
+    sys.stderr.write("w = %s\n" % self.w)
+  def predict(self, obs):
+    w = self.w
+    xagent, yagent, uagent, vagent, \
+        xball, yball, uball, vball, \
+        xopponent, yopponent, uopponent, vopponent =  obs
+    x = xagent - xball
+    y = yagent - yball
+    forward = backward = jump = 0
+    if w[0] * x + w[1] * y + w[2] > 0:
+        forward = 1
+    else:
+        backward = 1
+    if w[3] * x + w[4] * y + w[5] > 0:
+        jump = 1
+    return forward, backward, jump
 
 def makeBaselinePolicy(_):
   return BaselinePolicy()
@@ -91,13 +117,13 @@ def evaluate_multiagent(env, policy0, policy1, render_mode=False, n_trials=1000,
   for i in range(n_trials):
     env.seed(seed=init_seed+i)
     cumulative_score = rollout(env, policy0, policy1, render_mode=render_mode)
-    print("cumulative score #", i, ":", cumulative_score)
+    #print("cumulative score #", i, ":", cumulative_score)
     history.append(cumulative_score)
   return history
 
 if __name__=="__main__":
 
-  APPROVED_MODELS = ["baseline", "ppo", "ga", "cma", "random"]
+  APPROVED_MODELS = ["baseline", "ppo", "ga", "cma", "random", "linear"]
 
   def checkchoice(choice):
     choice = choice.lower()
@@ -111,6 +137,7 @@ if __name__=="__main__":
     "cma": "zoo/cmaes/slimevolley.cma.64.96.best.json",
     "ga": "zoo/ga_sp/ga.json",
     "random": None,
+    "linear": None,
   }
 
   MODEL = {
@@ -119,6 +146,7 @@ if __name__=="__main__":
     "cma": makeSlimePolicy,
     "ga": makeSlimePolicyLite,
     "random": RandomPolicy,
+    "linear": LinearPolicy,
   }
 
   parser = argparse.ArgumentParser(description='Evaluate pre-trained agents against each other.')
@@ -173,6 +201,7 @@ if __name__=="__main__":
   history = evaluate_multiagent(env, policy0, policy1,
     render_mode=render_mode, n_trials=args.trials, init_seed=args.seed)
 
-  print("history dump:", history)
-  print(c0+" scored", np.round(np.mean(history), 3), "±", np.round(np.std(history), 3), "vs",
-    c1, "over", args.trials, "trials.")
+  #print("history dump:", history)
+  #print(c0+" scored", np.round(np.mean(history), 3), "±", np.round(np.std(history), 3), "vs",
+  #  c1, "over", args.trials, "trials.")
+  print("score", np.mean(history))

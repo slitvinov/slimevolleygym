@@ -66,11 +66,12 @@ class LinearPolicy:
         xball, yball, uball, vball, \
         xopponent, yopponent, uopponent, vopponent =  obs
     u = uball
-    v = vball
+    v = vball - vagent
     forward = backward = jump = 0
     #g = 0.09673518038055715
-    w = [0.4836759019027857, 0.5447007397561805, 0.483784490737581]
-    x0 = xball +  w[0]/5*u*math.sqrt(yball) + w[1]/20 + w[2]/150*v
+    w[0] = 0.4836759019027857
+    w[1] = 0.5447007397561805 #0.483784490737581]
+    x0 = xball +  w[0]/5*u*math.sqrt(yball) + w[1]/20 + w[2]/100*v
     if xagent - x0 > 0:
         forward = 1
     else:

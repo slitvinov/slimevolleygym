@@ -34,7 +34,7 @@ from slimevolleygym.mlp import makeSlimePolicy, makeSlimePolicyLite # simple pre
 from slimevolleygym import BaselinePolicy
 from time import sleep
 
-#import cv2
+import cv2
 
 np.set_printoptions(threshold=20, precision=4, suppress=True, linewidth=200)
 
@@ -58,7 +58,7 @@ def rnd():
 
 class LinearPolicy:
   def __init__(self, path):
-    self.w = [rnd(), rnd(), rnd()]
+    self.w = [rnd(), rnd(), rnd(), rnd()]
     sys.stdout.write("w %s\n" % self.w)
   def predict(self, obs):
     w = self.w
@@ -66,15 +66,13 @@ class LinearPolicy:
         xball, yball, uball, vball, \
         xopponent, yopponent, uopponent, vopponent =  obs
     u = uball
-    v = vball - vagent
+    v = vball
+    y = yball - 0.15
     forward = backward = jump = 0
-    w[0] = 0.4836759019027857
-    w[1] = 0.5447007397561805
-    w[2] = -0.12234233766090985
-    x0 = xball +  w[0]/5*u*math.sqrt(yball) + w[1]/20 + w[2]/100*v
+    g = 9.8*2*1.5 # 25.84375188183839
+    x0 = xball +  u*math.sqrt(2*y/g) + u*v/g
     if xagent - x0 > 0:
         forward = 1
-        jump = 1
     else:
         backward = 1
     return forward, backward, jump
@@ -105,12 +103,14 @@ def rollout(env, policy0, policy1, render_mode=False):
 
     if render_mode:
       env.render()
-      '''img = env.render("rgb_array")
-      filename = os.path.join(str(count).zfill(8)+".png")
-      print(filename)
-      cv2.imwrite(filename, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-      count += 1'''
-      sleep(0.01)
+      if args.png:
+          img = env.render("rgb_array")
+          filename = os.path.join(str(count).zfill(8)+".png")
+          print(filename)
+          cv2.imwrite(filename, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+          count += 1
+      else:
+          sleep(0.01)
 
   return total_reward
 
@@ -161,6 +161,8 @@ if __name__=="__main__":
   parser.add_argument('--pixel', action='store_true', help='pixel rendering effect? (note: not pixel obs mode)', default=False)
   parser.add_argument('--seed', help='random seed (integer)', type=int, default=721)
   parser.add_argument('--trials', help='number of trials (default 1000)', type=int, default=1000)
+  parser.add_argument('--png', action='store_true', help='write imatges', default=False)
+
 
   args = parser.parse_args()
 

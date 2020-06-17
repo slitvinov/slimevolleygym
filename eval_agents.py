@@ -70,8 +70,13 @@ class LinearPolicy:
     y = yball - 0.15
     forward = backward = jump = 0
     g = 9.8*2*1.5 # 25.84375188183839
-    x0 = xball +  u*math.sqrt(2*y/g) + u*v/g
+    x0 = xball +  u*math.sqrt(2*y/g) + u*v/g + 0.01
+    dx = xball - xagent
+    dy = yball - yagent
+    angle = math.atan2(dy, dx)
     if xagent - x0 > 0:
+        if dx*dx * dy*dy < 0.05*0.05 and angle > 0.5*math.pi and angle < 0.9*math.pi:
+            jump = 1
         forward = 1
     else:
         backward = 1

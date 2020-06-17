@@ -1,2 +1,2 @@
-<p align="center"><img src="figure/hold.gif"/></p><br/>
-<p align="center"><img src="figure/hold.mp4"/></p>
+<p align="center"><img src="hold.gif"/></p><br/>
+<p align="center"><img src="hold.mp4"/></p>
